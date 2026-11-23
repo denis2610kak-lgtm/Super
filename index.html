@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 | Технические работы</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #2b2d2f;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        /* Основной блок по центру */
+        .container {
+            max-width: 440px;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 26px;
+            font-weight: 600;
+            margin-bottom: 14px;
+            letter-spacing: 0.3px;
+        }
+
+        .subtitle {
+            font-size: 17px;
+            color: #d1d1d1;
+            margin-bottom: 35px;
+            line-height: 1.4;
+        }
+
+        /* Анимация для иллюстрации робота */
+        .robot-wrapper {
+            position: relative;
+        }
+
+        .wrench {
+            transform-origin: 155px 115px;
+            animation: repair 2s ease-in-out infinite;
+        }
+
+        .spark {
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes repair {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(-22deg); }
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 0; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.1); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Центральная часть -->
+    <div class="container">
+        <h1>Технические работы</h1>
+        <p class="subtitle">404 | Страница временно недоступна или находится на обновлении</p>
+
+        <!-- Иллюстрация робота в круге -->
+        <div class="robot-wrapper">
+            <svg width="210" height="210" viewBox="0 0 220 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Красный/розовый круг на фоне -->
+                <circle cx="110" cy="110" r="82" fill="#3a3335" stroke="#d97b7b" stroke-width="6"/>
+                
+                <!-- Тень снизу -->
+                <ellipse cx="110" cy="176" rx="46" ry="7" fill="#1e2022"/>
+
+                <!-- Ноги робота -->
+                <rect x="86" y="148" width="14" height="24" rx="4" fill="#7d858c"/>
+                <rect x="120" y="148" width="14" height="24" rx="4" fill="#7d858c"/>
+                <path d="M80 172C80 168 84 166 93 166C102 166 104 168 104 172H80Z" fill="#4f5459"/>
+                <path d="M116 172C116 168 120 166 129 166C138 166 140 168 140 172H116Z" fill="#4f5459"/>
+
+                <!-- Тело робота -->
+                <rect x="74" y="96" width="72" height="56" rx="12" fill="#9aa3ab" stroke="#232527" stroke-width="3"/>
+                <!-- Экран на груди -->
+                <rect x="86" y="108" width="48" height="28" rx="5" fill="#232527"/>
+                <!-- Полоска загрузки на груди -->
+                <rect x="92" y="119" width="36" height="6" rx="3" fill="#3b3e42"/>
+                <rect x="92" y="119" width="22" height="6" rx="3" fill="#f5b041"/>
+
+                <!-- Левая рука -->
+                <path d="M74 108C60 108 55 122 60 135" stroke="#7d858c" stroke-width="10" stroke-linecap="round"/>
+                <circle cx="60" cy="137" r="7" fill="#4f5459"/>
+
+                <!-- Правая рука с гаечным ключом (анимированная) -->
+                <g class="wrench">
+                    <path d="M146 108C160 104 168 95 166 82" stroke="#7d858c" stroke-width="10" stroke-linecap="round"/>
+                    <!-- Гаечный ключ -->
+                    <path d="M166 82L182 62" stroke="#d0d5dd" stroke-width="7" stroke-linecap="round"/>
+                    <circle cx="184" cy="59" r="9" fill="#d0d5dd"/>
+                    <circle cx="187" cy="56" r="4" fill="#3a3335"/>
+                </g>
+
+                <!-- Голова робота -->
+                <rect x="78" y="44" width="64" height="46" rx="12" fill="#b4bcc4" stroke="#232527" stroke-width="3"/>
+                <!-- Визор / Глаза -->
+                <rect x="86" y="54" width="48" height="24" rx="6" fill="#1e2022"/>
+                <!-- Левый глаз (светится) -->
+                <circle cx="99" cy="66" r="5" fill="#5dade2"/>
+                <!-- Правый глаз (крестик — поломка) -->
+                <path d="M117 62L125 70M125 62L117 70" stroke="#e74c3c" stroke-width="3" stroke-linecap="round"/>
+
+                <!-- Строительная каска на голове -->
+                <path d="M76 46C76 28 144 28 144 46H76Z" fill="#f4b41a" stroke="#232527" stroke-width="2.5"/>
+                <rect x="70" y="44" width="80" height="6" rx="3" fill="#f4b41a" stroke="#232527" stroke-width="2"/>
+                <rect x="105" y="29" width="10" height="15" rx="2" fill="#ffd15c"/>
+
+                <!-- Искры ремонта -->
+                <g class="spark">
+                    <path d="M155 42L161 36M162 46L170 44M152 34L154 26" stroke="#f4b41a" stroke-width="2.5" stroke-linecap="round"/>
+                </g>
+            </svg>
+        </div>
+    </div>
+
+</body>
+</html>
