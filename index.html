@@ -34,6 +34,7 @@
     }
 
     .header {
+      position: relative;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -41,7 +42,7 @@
       background: rgba(11, 13, 18, 0.85);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
-      z-index: 10;
+      z-index: 25;
     }
 
     .icon-btn {
@@ -67,6 +68,11 @@
       border-radius: 999px;
       font-size: 14px;
       font-weight: 600;
+      cursor: pointer;
+    }
+
+    .model-selector:active {
+      background: var(--bg-card-hover);
     }
 
     .status-dot {
@@ -80,6 +86,99 @@
     .status-dot.offline {
       background: #ef4444;
       box-shadow: 0 0 8px rgba(239, 68, 68, 0.7);
+    }
+
+    .model-frame-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      z-index: 20;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+
+    .model-frame-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .model-frame {
+      position: fixed;
+      top: 66px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-8px);
+      width: min(340px, calc(100vw - 24px));
+      background: #141824;
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 10px;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.65);
+      z-index: 30;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s, transform 0.2s;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .model-frame.open {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .model-option {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 16px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-primary);
+      text-align: left;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .model-option:hover,
+    .model-option:active {
+      background: var(--bg-card-hover);
+    }
+
+    .model-option.active {
+      background: rgba(99, 102, 241, 0.14);
+      border-color: rgba(99, 102, 241, 0.45);
+    }
+
+    .model-option-icon {
+      width: 22px;
+      font-size: 16px;
+      line-height: 22px;
+      text-align: center;
+      color: #a5b4fc;
+      flex-shrink: 0;
+    }
+
+    .model-option-body {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .model-option-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .model-option-desc {
+      font-size: 12.5px;
+      line-height: 1.35;
+      color: var(--text-secondary);
     }
 
     .chat-container {
@@ -235,6 +334,22 @@
       object-fit: cover;
     }
 
+    .gen-video {
+      width: 100%;
+      max-width: 280px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      display: block;
+      background: #0b0d12;
+      aspect-ratio: 16 / 9;
+    }
+
+    .media-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
     .save-btn {
       display: inline-flex;
       align-items: center;
@@ -250,6 +365,12 @@
       border-radius: 10px;
       text-align: center;
       cursor: pointer;
+    }
+
+    .save-btn.secondary {
+      background: #1e2433;
+      border: 1px solid var(--border);
+      color: var(--text-primary);
     }
 
     .input-area {
@@ -423,11 +544,15 @@
     <div class="chat-history" id="historyList"></div>
   </aside>
 
+  <div class="model-frame-backdrop" id="modelFrameBackdrop" onclick="toggleModelFrame(false)"></div>
+  <div class="model-frame" id="modelFrame" role="dialog" aria-label="Выбор модели"></div>
+
   <header class="header">
     <button class="icon-btn" onclick="toggleDrawer(true)">☰</button>
-    <div class="model-selector">
+    <div class="model-selector" onclick="toggleModelFrame()" title="Нажми, чтобы выбрать модель">
       <span class="status-dot" id="statusDot"></span>
-      <span id="modelName">Super Local</span>
+      <span id="modelName">Super Photo</span>
+      <span style="font-size: 11px; color: var(--text-secondary);">▼</span>
     </div>
     <button class="icon-btn" onclick="startNewChat()" title="Новый чат">➕</button>
   </header>
@@ -436,13 +561,13 @@
     <div class="hero" id="heroScreen">
       <div class="super-orb">S</div>
       <h1>Привет, я Super</h1>
-      <p>Задай вопрос или нажми карточку ниже</p>
+      <p>Выбери модель вверху или нажми карточку ниже</p>
 
       <div class="quick-grid">
-        <div class="quick-card" onclick="quickAsk('Сделай 18+ картинку')">
+        <div class="quick-card" id="quickCard" onclick="quickAsk('Сделай 18+ картинку')">
           <span class="emoji">🔞</span>
-          <div class="q-title">Сделай 18+ картинку</div>
-          <div class="q-sub">Генерация изображения</div>
+          <div class="q-title" id="quickTitle">Сделай 18+ картинку</div>
+          <div class="q-sub" id="quickSub">Генерация изображения</div>
         </div>
       </div>
     </div>
@@ -455,7 +580,7 @@
       <input
         type="text"
         id="userInput"
-        placeholder="Напиши сообщение..."
+        placeholder="Опиши фото для генерации..."
         onkeydown="if(event.key==='Enter') sendMsg()"
       />
       <button class="action-btn" id="sendBtn" onclick="sendMsg()">➤</button>
@@ -476,6 +601,24 @@
       "https://i.postimg.cc/Xq5Fxhp1/IMG-ed3cb263-7e8b-425f-9e39-30a989077b56.jpg"
     ];
 
+    const PERSONAL_VIDEOS = [
+      "https://denis2610kak-lgtm.github.io/Video-1/Video.Guru_20261124-193410845-compressed.mp4"
+    ];
+
+    const MODELS = [
+      {
+        id: 'photo',
+        name: 'Super Photo',
+        desc: 'он может фото 18+ делать'
+      },
+      {
+        id: 'video',
+        name: 'Super Video',
+        desc: 'он может сделать видео 18+'
+      }
+    ];
+    let currentModelIdx = 0;
+
     const GENERATED_CAPTIONS = [
       "Готово! Вот что я сгенерировал по твоему запросу:",
       "Картинка создана! Смотри результат:",
@@ -483,31 +626,98 @@
       "Готово! Вот результат генерации:"
     ];
 
-    const LOCAL_REPLIES = [
-      "Отличная задумка! Разбей её на небольшие этапы и протестируй прямо в Acode.",
-      "Интересный вопрос. Главное — сделать чистую структуру и удобный интерфейс.",
-      "Хорошая идея для проекта! Можно добавить крутой визуал и пару нестандартных механик.",
-      "Понял тебя! Если нужно что-то доработать в интерфейсе или логике — напиши."
+    const VIDEO_CAPTIONS = [
+      "Готово! Вот видео по твоему запросу:",
+      "Видео сгенерировано! Смотри плеер ниже:",
+      "Готовый клип готов к просмотру:"
     ];
 
-    const STORAGE_KEY = 'super_local_sessions_v1';
+    const STORAGE_KEY = 'super_local_sessions_v3';
     let sessions = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
     let currentSessionId = null;
 
-    // Флаг активности чата: поставь false, если хочешь заблокировать отправку сообщений
     let isChatEnabled = true;
     let isSending = false;
+    let isModelFrameOpen = false;
 
     const drawer = document.getElementById('drawer');
     const backdrop = document.getElementById('backdrop');
+    const modelFrame = document.getElementById('modelFrame');
+    const modelFrameBackdrop = document.getElementById('modelFrameBackdrop');
     const heroScreen = document.getElementById('heroScreen');
+    const quickCard = document.getElementById('quickCard');
+    const quickTitle = document.getElementById('quickTitle');
+    const quickSub = document.getElementById('quickSub');
     const messages = document.getElementById('messages');
     const userInput = document.getElementById('userInput');
     const sendBtn = document.getElementById('sendBtn');
     const inputWrapper = document.getElementById('inputWrapper');
     const statusDot = document.getElementById('statusDot');
+    const modelNameEl = document.getElementById('modelName');
     const historyList = document.getElementById('historyList');
     const chatContainer = document.getElementById('chatContainer');
+
+    function getCurrentModel() {
+      return MODELS[currentModelIdx];
+    }
+
+    function updateQuickCard() {
+      const isVideo = getCurrentModel().id === 'video';
+      const promptText = isVideo ? 'Сделай 18+ видео' : 'Сделай 18+ картинку';
+      quickTitle.textContent = promptText;
+      quickSub.textContent = isVideo ? 'Генерация видео' : 'Генерация изображения';
+      quickCard.onclick = () => quickAsk(promptText);
+    }
+
+    function renderModelFrame() {
+      modelFrame.innerHTML = '';
+      MODELS.forEach((m, idx) => {
+        const isActive = idx === currentModelIdx;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'model-option' + (isActive ? ' active' : '');
+        btn.onclick = () => selectModel(idx);
+
+        const icon = document.createElement('span');
+        icon.className = 'model-option-icon';
+        icon.textContent = isActive ? '✓' : '';
+
+        const body = document.createElement('div');
+        body.className = 'model-option-body';
+
+        const title = document.createElement('div');
+        title.className = 'model-option-title';
+        title.textContent = m.name;
+
+        const desc = document.createElement('div');
+        desc.className = 'model-option-desc';
+        desc.textContent = m.desc;
+
+        body.appendChild(title);
+        body.appendChild(desc);
+        btn.appendChild(icon);
+        btn.appendChild(body);
+        modelFrame.appendChild(btn);
+      });
+    }
+
+    function toggleModelFrame(forceState) {
+      if (isSending) return;
+      isModelFrameOpen = typeof forceState === 'boolean' ? forceState : !isModelFrameOpen;
+      if (isModelFrameOpen) {
+        renderModelFrame();
+      }
+      modelFrame.classList.toggle('open', isModelFrameOpen);
+      modelFrameBackdrop.classList.toggle('open', isModelFrameOpen);
+    }
+
+    function selectModel(idx) {
+      currentModelIdx = idx;
+      modelNameEl.textContent = getCurrentModel().name;
+      updateQuickCard();
+      updateInputState();
+      toggleModelFrame(false);
+    }
 
     function updateInputState() {
       const locked = !isChatEnabled || isSending;
@@ -520,8 +730,10 @@
         userInput.placeholder = "Чат сейчас не работает...";
       } else if (isSending) {
         userInput.placeholder = "Подожди, формирую ответ...";
+      } else if (getCurrentModel().id === 'video') {
+        userInput.placeholder = "Опиши видео для генерации...";
       } else {
-        userInput.placeholder = "Напиши сообщение...";
+        userInput.placeholder = "Опиши фото для генерации...";
       }
     }
 
@@ -531,16 +743,21 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => {
+      modelNameEl.textContent = getCurrentModel().name;
       renderHistory();
+      renderModelFrame();
+      updateQuickCard();
       updateInputState();
     });
 
     function toggleDrawer(show) {
+      if (show) toggleModelFrame(false);
       drawer.classList.toggle('open', show);
       backdrop.classList.toggle('open', show);
     }
 
     function startNewChat() {
+      toggleModelFrame(false);
       currentSessionId = null;
       messages.innerHTML = '';
       messages.style.display = 'none';
@@ -551,9 +768,28 @@
 
     function quickAsk(text) {
       if (!isChatEnabled || isSending) return;
+      toggleModelFrame(false);
       toggleDrawer(false);
       userInput.value = text;
       sendMsg();
+    }
+
+    async function triggerDownload(url, filename) {
+      try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('Network error');
+        const blob = await res.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = filename || 'video.mp4';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 2000);
+      } catch (e) {
+        window.open(url, '_blank', 'noopener,noreferrer');
+      }
     }
 
     function createBubbleElement(msg) {
@@ -562,7 +798,7 @@
 
       const sender = document.createElement('div');
       sender.className = 'msg-sender';
-      sender.textContent = msg.role === 'user' ? 'Вы' : 'Super';
+      sender.textContent = msg.role === 'user' ? 'Вы' : (msg.modelName || 'Super');
 
       const bubble = document.createElement('div');
       bubble.className = 'msg-bubble';
@@ -587,6 +823,39 @@
         bubble.appendChild(wrap);
       }
 
+      if (msg.videoUrl) {
+        const wrap = document.createElement('div');
+        wrap.className = 'gen-img-wrap';
+
+        const video = document.createElement('video');
+        video.className = 'gen-video';
+        video.src = msg.videoUrl;
+        video.controls = true;
+        video.playsInline = true;
+
+        const actions = document.createElement('div');
+        actions.className = 'media-actions';
+
+        const openBtn = document.createElement('a');
+        openBtn.className = 'save-btn';
+        openBtn.href = msg.videoUrl;
+        openBtn.target = '_blank';
+        openBtn.rel = 'noopener noreferrer';
+        openBtn.textContent = '🎬 Открыть видео';
+
+        const dlBtn = document.createElement('button');
+        dlBtn.type = 'button';
+        dlBtn.className = 'save-btn secondary';
+        dlBtn.textContent = '📥 Скачать видео';
+        dlBtn.onclick = () => triggerDownload(msg.videoUrl, 'super-video.mp4');
+
+        actions.appendChild(openBtn);
+        actions.appendChild(dlBtn);
+        wrap.appendChild(video);
+        wrap.appendChild(actions);
+        bubble.appendChild(wrap);
+      }
+
       row.appendChild(sender);
       row.appendChild(bubble);
       return { row, bubble };
@@ -601,6 +870,7 @@
       const session = sessions.find(s => s.id === sessionId);
       if (!session) return;
 
+      toggleModelFrame(false);
       currentSessionId = sessionId;
       heroScreen.style.display = 'none';
       messages.style.display = 'flex';
@@ -633,24 +903,14 @@
       });
     }
 
-    function getLocalReply(query) {
-      const q = query.toLowerCase();
-      if (q.includes('иде') || q.includes('проект')) {
-        return "Как насчёт создания атмосферной игры с прокачкой, квестами и тёмным интерфейсом? Начни с простого прототипа и постепенно добавляй механики.";
-      }
-      if (q.includes('привет') || q.includes('здаров')) {
-        return "Привет! Чем займёмся сегодня?";
-      }
-      const idx = Math.floor(Math.random() * LOCAL_REPLIES.length);
-      return LOCAL_REPLIES[idx];
-    }
-
     function sendMsg() {
       if (!isChatEnabled || isSending) return;
 
       const text = userInput.value.trim();
       if (!text) return;
 
+      toggleModelFrame(false);
+      const model = getCurrentModel();
       isSending = true;
       updateInputState();
 
@@ -658,19 +918,14 @@
       messages.style.display = 'flex';
       userInput.value = '';
 
-      const lower = text.toLowerCase();
-      const isImgRequest =
-        lower.includes('нарисуй') ||
-        lower.includes('фото') ||
-        lower.includes('картинк') ||
-        lower.includes('покажи') ||
-        lower.includes('18+');
+      const mode = model.id === 'video' ? 'video' : 'photo';
+      const prefixIcon = mode === 'video' ? '🎬 ' : '🖼️ ';
 
       if (!currentSessionId) {
         currentSessionId = Date.now().toString();
         sessions.unshift({
           id: currentSessionId,
-          title: (isImgRequest ? '🖼️ ' : '💬 ') + text,
+          title: prefixIcon + text,
           messages: []
         });
         if (sessions.length > 15) sessions.pop();
@@ -684,9 +939,12 @@
       chatContainer.scrollTop = chatContainer.scrollHeight;
       saveSessions();
 
+      const pendingText = mode === 'video' ? 'Генерирую видео...' : 'Генерирую изображение...';
+
       const tempRow = createBubbleElement({
         role: 'ai',
-        text: isImgRequest ? 'Генерирую изображение...' : 'Печатает...'
+        modelName: model.name,
+        text: pendingText
       }).row;
       messages.appendChild(tempRow);
       chatContainer.scrollTop = chatContainer.scrollHeight;
@@ -695,19 +953,23 @@
         tempRow.remove();
 
         let aiMsg;
-        if (isImgRequest) {
-          const randomIndex = Math.floor(Math.random() * PERSONAL_IMAGES.length);
-          const captionIndex = Math.floor(Math.random() * GENERATED_CAPTIONS.length);
-          const imgUrl = PERSONAL_IMAGES[randomIndex];
+        if (mode === 'video') {
+          const videoIndex = Math.floor(Math.random() * PERSONAL_VIDEOS.length);
+          const captionIndex = Math.floor(Math.random() * VIDEO_CAPTIONS.length);
           aiMsg = {
             role: 'ai',
-            text: GENERATED_CAPTIONS[captionIndex],
-            imageUrl: imgUrl
+            modelName: model.name,
+            text: VIDEO_CAPTIONS[captionIndex],
+            videoUrl: PERSONAL_VIDEOS[videoIndex]
           };
         } else {
+          const randomIndex = Math.floor(Math.random() * PERSONAL_IMAGES.length);
+          const captionIndex = Math.floor(Math.random() * GENERATED_CAPTIONS.length);
           aiMsg = {
             role: 'ai',
-            text: getLocalReply(text)
+            modelName: model.name,
+            text: GENERATED_CAPTIONS[captionIndex],
+            imageUrl: PERSONAL_IMAGES[randomIndex]
           };
         }
 
