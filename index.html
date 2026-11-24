@@ -1,140 +1,725 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>404 | Технические работы</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Super AI</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-        body {
-            background-color: #2b2d2f;
-            color: #ffffff;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-        }
+    :root {
+      --bg-main: #0b0d12;
+      --bg-card: #151923;
+      --bg-card-hover: #1e2433;
+      --accent: #6366f1;
+      --accent-glow: rgba(99, 102, 241, 0.35);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --border: #232938;
+    }
 
-        /* Основной блок по центру */
-        .container {
-            max-width: 440px;
-            padding: 30px 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-primary);
+      height: 100dvh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
 
-        h1 {
-            font-size: 26px;
-            font-weight: 600;
-            margin-bottom: 14px;
-            letter-spacing: 0.3px;
-        }
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      background: rgba(11, 13, 18, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      z-index: 10;
+    }
 
-        .subtitle {
-            font-size: 17px;
-            color: #d1d1d1;
-            margin-bottom: 35px;
-            line-height: 1.4;
-        }
+    .icon-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
 
-        /* Анимация для иллюстрации робота */
-        .robot-wrapper {
-            position: relative;
-        }
+    .model-selector {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 7px 14px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 600;
+    }
 
-        .wrench {
-            transform-origin: 155px 115px;
-            animation: repair 2s ease-in-out infinite;
-        }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 8px #22c55e;
+    }
 
-        .spark {
-            animation: blink 1.5s infinite;
-        }
+    .status-dot.offline {
+      background: #ef4444;
+      box-shadow: 0 0 8px rgba(239, 68, 68, 0.7);
+    }
 
-        @keyframes repair {
-            0%, 100% { transform: rotate(0deg); }
-            50% { transform: rotate(-22deg); }
-        }
+    .chat-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 18px 16px;
+      display: flex;
+      flex-direction: column;
+    }
 
-        @keyframes blink {
-            0%, 100% { opacity: 0; transform: scale(0.8); }
-            50% { opacity: 1; transform: scale(1.1); }
-        }
-    </style>
+    .hero {
+      margin: auto 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .super-orb {
+      width: 74px;
+      height: 74px;
+      border-radius: 24px;
+      background: linear-gradient(135deg, #6366f1, #a855f7, #ec4899);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      font-weight: 800;
+      color: #fff;
+      box-shadow: 0 10px 30px var(--accent-glow);
+      margin-bottom: 18px;
+      transform: rotate(-4deg);
+    }
+
+    .hero h1 {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 6px;
+      color: #fff;
+    }
+
+    .hero p {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+    }
+
+    .quick-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .quick-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .quick-card:active {
+      background: var(--bg-card-hover);
+    }
+
+    .quick-card .emoji {
+      font-size: 20px;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .quick-card .q-title {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 3px;
+    }
+
+    .quick-card .q-sub {
+      font-size: 11.5px;
+      color: var(--text-secondary);
+    }
+
+    .messages {
+      display: none;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .msg-row {
+      display: flex;
+      flex-direction: column;
+      max-width: 85%;
+    }
+
+    .msg-row.user {
+      align-self: flex-end;
+      align-items: flex-end;
+    }
+
+    .msg-row.ai {
+      align-self: flex-start;
+      align-items: flex-start;
+    }
+
+    .msg-sender {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+      padding: 0 4px;
+    }
+
+    .msg-bubble {
+      padding: 12px 16px;
+      border-radius: 18px;
+      font-size: 14.5px;
+      line-height: 1.5;
+      word-wrap: break-word;
+      white-space: pre-wrap;
+    }
+
+    .msg-row.user .msg-bubble {
+      background: linear-gradient(135deg, #4f46e5, #6366f1);
+      color: #ffffff;
+      border-bottom-right-radius: 4px;
+    }
+
+    .msg-row.ai .msg-bubble {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      border-bottom-left-radius: 4px;
+    }
+
+    .gen-img-wrap {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .gen-img {
+      width: 100%;
+      max-width: 280px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      display: block;
+      background: #0b0d12;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+    }
+
+    .save-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: var(--accent);
+      color: #fff;
+      text-decoration: none;
+      border: none;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 9px 12px;
+      border-radius: 10px;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .input-area {
+      padding: 10px 14px 16px;
+      background: var(--bg-main);
+      border-top: 1px solid var(--border);
+    }
+
+    .input-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 6px 8px 6px 14px;
+      transition: opacity 0.2s, border-color 0.2s;
+    }
+
+    .input-wrapper.locked {
+      opacity: 0.55;
+      border-color: rgba(239, 68, 68, 0.45);
+    }
+
+    .input-wrapper input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text-primary);
+      font-size: 15px;
+      padding: 8px 0;
+    }
+
+    .input-wrapper input:disabled {
+      cursor: not-allowed;
+    }
+
+    .input-wrapper input::placeholder {
+      color: var(--text-secondary);
+    }
+
+    .action-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 14px;
+      border: none;
+      background: var(--accent);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .action-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .drawer-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 40;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+    }
+
+    .drawer-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .drawer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 280px;
+      background: #10131c;
+      border-right: 1px solid var(--border);
+      z-index: 50;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(-100%);
+      transition: transform 0.25s ease;
+    }
+
+    .drawer.open {
+      transform: translateX(0);
+    }
+
+    .drawer-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .drawer-brand {
+      font-size: 20px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .create-btn {
+      width: 100%;
+      padding: 12px;
+      border-radius: 14px;
+      border: none;
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      color: #fff;
+      font-size: 14.5px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 14px;
+    }
+
+    .section-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+
+    .chat-history {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 12px;
+    }
+
+    .history-entry {
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid transparent;
+    }
+
+    .history-entry.active {
+      background: var(--bg-card);
+      border-color: var(--accent);
+    }
+  </style>
 </head>
 <body>
 
-    <!-- Центральная часть -->
-    <div class="container">
-        <h1>Технические работы</h1>
-        <p class="subtitle">404 | Страница временно недоступна или находится на обновлении</p>
+  <div class="drawer-backdrop" id="backdrop" onclick="toggleDrawer(false)"></div>
 
-        <!-- Иллюстрация робота в круге -->
-        <div class="robot-wrapper">
-            <svg width="210" height="210" viewBox="0 0 220 220" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <!-- Красный/розовый круг на фоне -->
-                <circle cx="110" cy="110" r="82" fill="#3a3335" stroke="#d97b7b" stroke-width="6"/>
-                
-                <!-- Тень снизу -->
-                <ellipse cx="110" cy="176" rx="46" ry="7" fill="#1e2022"/>
-
-                <!-- Ноги робота -->
-                <rect x="86" y="148" width="14" height="24" rx="4" fill="#7d858c"/>
-                <rect x="120" y="148" width="14" height="24" rx="4" fill="#7d858c"/>
-                <path d="M80 172C80 168 84 166 93 166C102 166 104 168 104 172H80Z" fill="#4f5459"/>
-                <path d="M116 172C116 168 120 166 129 166C138 166 140 168 140 172H116Z" fill="#4f5459"/>
-
-                <!-- Тело робота -->
-                <rect x="74" y="96" width="72" height="56" rx="12" fill="#9aa3ab" stroke="#232527" stroke-width="3"/>
-                <!-- Экран на груди -->
-                <rect x="86" y="108" width="48" height="28" rx="5" fill="#232527"/>
-                <!-- Полоска загрузки на груди -->
-                <rect x="92" y="119" width="36" height="6" rx="3" fill="#3b3e42"/>
-                <rect x="92" y="119" width="22" height="6" rx="3" fill="#f5b041"/>
-
-                <!-- Левая рука -->
-                <path d="M74 108C60 108 55 122 60 135" stroke="#7d858c" stroke-width="10" stroke-linecap="round"/>
-                <circle cx="60" cy="137" r="7" fill="#4f5459"/>
-
-                <!-- Правая рука с гаечным ключом (анимированная) -->
-                <g class="wrench">
-                    <path d="M146 108C160 104 168 95 166 82" stroke="#7d858c" stroke-width="10" stroke-linecap="round"/>
-                    <!-- Гаечный ключ -->
-                    <path d="M166 82L182 62" stroke="#d0d5dd" stroke-width="7" stroke-linecap="round"/>
-                    <circle cx="184" cy="59" r="9" fill="#d0d5dd"/>
-                    <circle cx="187" cy="56" r="4" fill="#3a3335"/>
-                </g>
-
-                <!-- Голова робота -->
-                <rect x="78" y="44" width="64" height="46" rx="12" fill="#b4bcc4" stroke="#232527" stroke-width="3"/>
-                <!-- Визор / Глаза -->
-                <rect x="86" y="54" width="48" height="24" rx="6" fill="#1e2022"/>
-                <!-- Левый глаз (светится) -->
-                <circle cx="99" cy="66" r="5" fill="#5dade2"/>
-                <!-- Правый глаз (крестик — поломка) -->
-                <path d="M117 62L125 70M125 62L117 70" stroke="#e74c3c" stroke-width="3" stroke-linecap="round"/>
-
-                <!-- Строительная каска на голове -->
-                <path d="M76 46C76 28 144 28 144 46H76Z" fill="#f4b41a" stroke="#232527" stroke-width="2.5"/>
-                <rect x="70" y="44" width="80" height="6" rx="3" fill="#f4b41a" stroke="#232527" stroke-width="2"/>
-                <rect x="105" y="29" width="10" height="15" rx="2" fill="#ffd15c"/>
-
-                <!-- Искры ремонта -->
-                <g class="spark">
-                    <path d="M155 42L161 36M162 46L170 44M152 34L154 26" stroke="#f4b41a" stroke-width="2.5" stroke-linecap="round"/>
-                </g>
-            </svg>
-        </div>
+  <aside class="drawer" id="drawer">
+    <div class="drawer-top">
+      <div class="drawer-brand">Super AI</div>
+      <button class="icon-btn" onclick="toggleDrawer(false)">✕</button>
     </div>
 
+    <button class="create-btn" onclick="startNewChat()">+ Новый диалог</button>
+
+    <div class="section-label">Недавние чаты</div>
+    <div class="chat-history" id="historyList"></div>
+  </aside>
+
+  <header class="header">
+    <button class="icon-btn" onclick="toggleDrawer(true)">☰</button>
+    <div class="model-selector">
+      <span class="status-dot" id="statusDot"></span>
+      <span id="modelName">Super Local</span>
+    </div>
+    <button class="icon-btn" onclick="startNewChat()" title="Новый чат">➕</button>
+  </header>
+
+  <main class="chat-container" id="chatContainer">
+    <div class="hero" id="heroScreen">
+      <div class="super-orb">S</div>
+      <h1>Привет, я Super</h1>
+      <p>Задай вопрос или нажми карточку ниже</p>
+
+      <div class="quick-grid">
+        <div class="quick-card" onclick="quickAsk('Сделай 18+ картинку')">
+          <span class="emoji">🔞</span>
+          <div class="q-title">Сделай 18+ картинку</div>
+          <div class="q-sub">Генерация изображения</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="messages" id="messages"></div>
+  </main>
+
+  <footer class="input-area">
+    <div class="input-wrapper" id="inputWrapper">
+      <input
+        type="text"
+        id="userInput"
+        placeholder="Напиши сообщение..."
+        onkeydown="if(event.key==='Enter') sendMsg()"
+      />
+      <button class="action-btn" id="sendBtn" onclick="sendMsg()">➤</button>
+    </div>
+  </footer>
+
+  <script>
+    const PERSONAL_IMAGES = [
+      "https://i.postimg.cc/VNDHbVHM/IMG-a0b3324c-123c-4719-a23f-91db4dcbf084.jpg",
+      "https://i.postimg.cc/V5Q78Q5r/IMG-ffeae16e-7e35-4dfd-8e9b-4646caf7d9d3.jpg",
+      "https://i.postimg.cc/VNDHbVHM/IMG-a0b3324c-123c-4719-a23f-91db4dcbf084.jpg",
+      "https://i.postimg.cc/JhzCgJfB/IMG-0e76611e-2375-4756-a493-c02a4a640caa.jpg",
+      "https://i.postimg.cc/D0s9scXP/IMG-e5e3ae20-e48a-43e7-b765-e91ef07bbb82.jpg",
+      "https://i.postimg.cc/V5Q78Q5r/IMG-ffeae16e-7e35-4dfd-8e9b-4646caf7d9d3.jpg",
+      "https://i.postimg.cc/LsvJTSvY/IMG-874ff486-9292-4e72-bd4d-3980e05d36ae.jpg",
+      "https://i.postimg.cc/3rzFpjdZ/IMG-f02a9238-286d-4b6f-9d71-14aa10c6a468.jpg",
+      "https://i.postimg.cc/g0cVdNT3/IMG-b58e6b96-4555-4079-accb-0026918bc97d.jpg",
+      "https://i.postimg.cc/Xq5Fxhp1/IMG-ed3cb263-7e8b-425f-9e39-30a989077b56.jpg"
+    ];
+
+    const GENERATED_CAPTIONS = [
+      "Готово! Вот что я сгенерировал по твоему запросу:",
+      "Картинка создана! Смотри результат:",
+      "Сгенерировал изображение специально для тебя:",
+      "Готово! Вот результат генерации:"
+    ];
+
+    const LOCAL_REPLIES = [
+      "Отличная задумка! Разбей её на небольшие этапы и протестируй прямо в Acode.",
+      "Интересный вопрос. Главное — сделать чистую структуру и удобный интерфейс.",
+      "Хорошая идея для проекта! Можно добавить крутой визуал и пару нестандартных механик.",
+      "Понял тебя! Если нужно что-то доработать в интерфейсе или логике — напиши."
+    ];
+
+    const STORAGE_KEY = 'super_local_sessions_v1';
+    let sessions = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    let currentSessionId = null;
+
+    // Флаг активности чата: поставь false, если хочешь заблокировать отправку сообщений
+    let isChatEnabled = true;
+    let isSending = false;
+
+    const drawer = document.getElementById('drawer');
+    const backdrop = document.getElementById('backdrop');
+    const heroScreen = document.getElementById('heroScreen');
+    const messages = document.getElementById('messages');
+    const userInput = document.getElementById('userInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const inputWrapper = document.getElementById('inputWrapper');
+    const statusDot = document.getElementById('statusDot');
+    const historyList = document.getElementById('historyList');
+    const chatContainer = document.getElementById('chatContainer');
+
+    function updateInputState() {
+      const locked = !isChatEnabled || isSending;
+      userInput.disabled = locked;
+      sendBtn.disabled = locked;
+      inputWrapper.classList.toggle('locked', !isChatEnabled);
+      statusDot.classList.toggle('offline', !isChatEnabled);
+
+      if (!isChatEnabled) {
+        userInput.placeholder = "Чат сейчас не работает...";
+      } else if (isSending) {
+        userInput.placeholder = "Подожди, формирую ответ...";
+      } else {
+        userInput.placeholder = "Напиши сообщение...";
+      }
+    }
+
+    function setChatEnabled(enabled) {
+      isChatEnabled = Boolean(enabled);
+      updateInputState();
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      renderHistory();
+      updateInputState();
+    });
+
+    function toggleDrawer(show) {
+      drawer.classList.toggle('open', show);
+      backdrop.classList.toggle('open', show);
+    }
+
+    function startNewChat() {
+      currentSessionId = null;
+      messages.innerHTML = '';
+      messages.style.display = 'none';
+      heroScreen.style.display = 'flex';
+      renderHistory();
+      toggleDrawer(false);
+    }
+
+    function quickAsk(text) {
+      if (!isChatEnabled || isSending) return;
+      toggleDrawer(false);
+      userInput.value = text;
+      sendMsg();
+    }
+
+    function createBubbleElement(msg) {
+      const row = document.createElement('div');
+      row.className = `msg-row ${msg.role}`;
+
+      const sender = document.createElement('div');
+      sender.className = 'msg-sender';
+      sender.textContent = msg.role === 'user' ? 'Вы' : 'Super';
+
+      const bubble = document.createElement('div');
+      bubble.className = 'msg-bubble';
+      bubble.textContent = msg.text;
+
+      if (msg.imageUrl) {
+        const wrap = document.createElement('div');
+        wrap.className = 'gen-img-wrap';
+
+        const img = new Image();
+        img.className = 'gen-img';
+        img.src = msg.imageUrl;
+
+        const btn = document.createElement('a');
+        btn.className = 'save-btn';
+        btn.href = msg.imageUrl;
+        btn.target = '_blank';
+        btn.textContent = '📥 Открыть / Скачать фото';
+
+        wrap.appendChild(img);
+        wrap.appendChild(btn);
+        bubble.appendChild(wrap);
+      }
+
+      row.appendChild(sender);
+      row.appendChild(bubble);
+      return { row, bubble };
+    }
+
+    function saveSessions() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions));
+      renderHistory();
+    }
+
+    function openSession(sessionId) {
+      const session = sessions.find(s => s.id === sessionId);
+      if (!session) return;
+
+      currentSessionId = sessionId;
+      heroScreen.style.display = 'none';
+      messages.style.display = 'flex';
+      messages.innerHTML = '';
+
+      session.messages.forEach(msg => {
+        const { row } = createBubbleElement(msg);
+        messages.appendChild(row);
+      });
+
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+      renderHistory();
+      toggleDrawer(false);
+    }
+
+    function renderHistory() {
+      historyList.innerHTML = '';
+
+      if (sessions.length === 0) {
+        historyList.innerHTML = '<div style="font-size: 12px; color: #94a3b8; padding: 6px;">История пуста</div>';
+        return;
+      }
+
+      sessions.forEach(session => {
+        const div = document.createElement('div');
+        div.className = 'history-entry' + (session.id === currentSessionId ? ' active' : '');
+        div.textContent = session.title;
+        div.onclick = () => openSession(session.id);
+        historyList.appendChild(div);
+      });
+    }
+
+    function getLocalReply(query) {
+      const q = query.toLowerCase();
+      if (q.includes('иде') || q.includes('проект')) {
+        return "Как насчёт создания атмосферной игры с прокачкой, квестами и тёмным интерфейсом? Начни с простого прототипа и постепенно добавляй механики.";
+      }
+      if (q.includes('привет') || q.includes('здаров')) {
+        return "Привет! Чем займёмся сегодня?";
+      }
+      const idx = Math.floor(Math.random() * LOCAL_REPLIES.length);
+      return LOCAL_REPLIES[idx];
+    }
+
+    function sendMsg() {
+      if (!isChatEnabled || isSending) return;
+
+      const text = userInput.value.trim();
+      if (!text) return;
+
+      isSending = true;
+      updateInputState();
+
+      heroScreen.style.display = 'none';
+      messages.style.display = 'flex';
+      userInput.value = '';
+
+      const lower = text.toLowerCase();
+      const isImgRequest =
+        lower.includes('нарисуй') ||
+        lower.includes('фото') ||
+        lower.includes('картинк') ||
+        lower.includes('покажи') ||
+        lower.includes('18+');
+
+      if (!currentSessionId) {
+        currentSessionId = Date.now().toString();
+        sessions.unshift({
+          id: currentSessionId,
+          title: (isImgRequest ? '🖼️ ' : '💬 ') + text,
+          messages: []
+        });
+        if (sessions.length > 15) sessions.pop();
+      }
+
+      const activeSession = sessions.find(s => s.id === currentSessionId);
+
+      const userMsg = { role: 'user', text: text };
+      activeSession.messages.push(userMsg);
+      messages.appendChild(createBubbleElement(userMsg).row);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+      saveSessions();
+
+      const tempRow = createBubbleElement({
+        role: 'ai',
+        text: isImgRequest ? 'Генерирую изображение...' : 'Печатает...'
+      }).row;
+      messages.appendChild(tempRow);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+
+      setTimeout(() => {
+        tempRow.remove();
+
+        let aiMsg;
+        if (isImgRequest) {
+          const randomIndex = Math.floor(Math.random() * PERSONAL_IMAGES.length);
+          const captionIndex = Math.floor(Math.random() * GENERATED_CAPTIONS.length);
+          const imgUrl = PERSONAL_IMAGES[randomIndex];
+          aiMsg = {
+            role: 'ai',
+            text: GENERATED_CAPTIONS[captionIndex],
+            imageUrl: imgUrl
+          };
+        } else {
+          aiMsg = {
+            role: 'ai',
+            text: getLocalReply(text)
+          };
+        }
+
+        activeSession.messages.push(aiMsg);
+        messages.appendChild(createBubbleElement(aiMsg).row);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+        saveSessions();
+
+        isSending = false;
+        updateInputState();
+      }, 350);
+    }
+  </script>
 </body>
 </html>
